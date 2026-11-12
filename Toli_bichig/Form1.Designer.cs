@@ -76,6 +76,7 @@
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(96, 28);
             comboBox1.TabIndex = 2;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // dataGridView1
             // 
@@ -85,6 +86,7 @@
             dataGridView1.RowHeadersWidth = 51;
             dataGridView1.Size = new Size(497, 419);
             dataGridView1.TabIndex = 3;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // dataGridView2
             // 
@@ -94,6 +96,7 @@
             dataGridView2.RowHeadersWidth = 51;
             dataGridView2.Size = new Size(216, 419);
             dataGridView2.TabIndex = 4;
+            dataGridView2.CellContentClick += dataGridView2_CellContentClick;
             // 
             // btnAdd
             // 
@@ -103,6 +106,7 @@
             btnAdd.TabIndex = 5;
             btnAdd.Text = "+ Нэмэх";
             btnAdd.UseVisualStyleBackColor = true;
+            btnAdd.Click += btnAdd_Click;
             // 
             // btnEdit
             // 
@@ -112,7 +116,7 @@
             btnEdit.TabIndex = 6;
             btnEdit.Text = "Засах";
             btnEdit.UseVisualStyleBackColor = true;
-            btnEdit.Click += button1_Click;
+            btnEdit.Click += btnEdit_Click;
             // 
             // btnDelete
             // 
@@ -122,6 +126,7 @@
             btnDelete.TabIndex = 7;
             btnDelete.Text = "Устгах";
             btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
             // 
             // btnClear
             // 
@@ -131,7 +136,7 @@
             btnClear.TabIndex = 8;
             btnClear.Text = "Цэвэрлэх\r\n";
             btnClear.UseVisualStyleBackColor = true;
-            btnClear.Click += button3_Click;
+            btnClear.Click += btnClear_Click;
             // 
             // btnSave
             // 
@@ -141,6 +146,7 @@
             btnSave.TabIndex = 9;
             btnSave.Text = "Санах";
             btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // label2
             // 
@@ -170,6 +176,7 @@
             label4.Size = new Size(63, 20);
             label4.TabIndex = 12;
             label4.Text = "Монгол";
+            label4.Click += label4_Click;
             // 
             // label5
             // 
@@ -179,6 +186,7 @@
             label5.Size = new Size(45, 20);
             label5.TabIndex = 13;
             label5.Text = "Орос";
+            label5.Click += label5_Click;
             // 
             // textBox2
             // 
@@ -186,6 +194,7 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(125, 27);
             textBox2.TabIndex = 14;
+            textBox2.TextChanged += textBox2_TextChanged;
             // 
             // textBox3
             // 
@@ -193,6 +202,7 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(125, 27);
             textBox3.TabIndex = 15;
+            textBox3.TextChanged += textBox3_TextChanged;
             // 
             // textBox4
             // 
@@ -200,6 +210,7 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(125, 27);
             textBox4.TabIndex = 16;
+            textBox4.TextChanged += textBox4_TextChanged;
             // 
             // Form1
             // 
