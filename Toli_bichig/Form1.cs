@@ -59,7 +59,16 @@ namespace Toli_bichig
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex >= 0)//baganiin nernees busad
+            {
+                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+                selectedId = Convert.ToInt32(row.Cells["id"].Value);
 
+                // Жишээ нь: Дарсан мөрийн үгсийг Textbox дээр харуулах бол:
+                textBox2.Text = row.Cells["eng"].Value.ToString();
+                textBox3.Text = row.Cells["mon"].Value.ToString();
+                textBox4.Text = row.Cells["rus"].Value.ToString();
+            }
         }
 
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -131,11 +140,63 @@ namespace Toli_bichig
         }
         private void btnEdit_Click(object sender, EventArgs e)
         {
+            if (selectedId == -1)
+            {
+                MessageBox.Show("Эхлээд засах үгээ хүснэгтээс сонгоно уу!");
+                return;
+            }
 
+            string connectionString = "Data Source=C:\\dict\\toli.db;Version=3;";
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string query = "UPDATE words SET eng = @eng, mon = @mon, rus = @rus WHERE id = @id;";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@eng", textBox2.Text);
+                    cmd.Parameters.AddWithValue("@mon", textBox3.Text);
+                    cmd.Parameters.AddWithValue("@rus", textBox4.Text);
+                    cmd.Parameters.AddWithValue("@id", selectedId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            MessageBox.Show("Амжилттай засагдлаа!");
+            LoadData();
         }
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            if (selectedId == -1)
+            {
+                MessageBox.Show("Эхлээд устгах үгээ хүснэгтээс сонгоно уу!");
+                return;
+            }
 
+            DialogResult dialogResult = MessageBox.Show("Энэ үгийг устгах уу?", "Баталгаажуулалт", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                string connectionString = "Data Source=C:\\dict\\toli.db;Version=3;";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "DELETE FROM words WHERE id = @id;";
+
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", selectedId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show("Амжилттай устгагдлаа!");
+                LoadData(); 
+
+                selectedId = -1;
+                textBox2.Clear();
+                textBox3.Clear();
+                textBox4.Clear();
+            }
         }
         private void btnClear_Click(object sender, EventArgs e)
         {
