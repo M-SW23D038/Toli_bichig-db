@@ -8,6 +8,7 @@ namespace Toli_bichig
     public partial class Form1 : Form
     {
         private string connectionString = "Data Source=C:\\dict\\toli.db;Version=3;";
+        private string savedConnectionString = "Data Source=C:\\dict\\saved.db;Version=3;";
 
         // zasah bolon ustgah ugiin songogdson id
         private int selectedId = -1;
@@ -15,6 +16,7 @@ namespace Toli_bichig
         {
             InitializeComponent();
             LoadData();
+            LoadSavedData();
         }
 
         // words table-iig haruulah
@@ -38,6 +40,27 @@ namespace Toli_bichig
             }
         }
 
+        // saved.db датабаазаас хадгалсан үгсийг dataGridView2 рүү татаж харуулах
+        private void LoadSavedData()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(savedConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM saved_words;";
+                    SQLiteDataAdapter da = new SQLiteDataAdapter(query, conn);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    dataGridView2.DataSource = dt; // Баруун талын хүснэгтийн нэр
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Хадгалсан өгөгдөл татахад алдаа гарлаа: " + ex.Message);
+                }
+            }
+        }
+
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -55,20 +78,6 @@ namespace Toli_bichig
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)//baganiin nernees busad
-            {
-                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
-                selectedId = Convert.ToInt32(row.Cells["id"].Value);
-
-                // Жишээ нь: Дарсан мөрийн үгсийг Textbox дээр харуулах бол:
-                textBox2.Text = row.Cells["eng"].Value.ToString();
-                textBox3.Text = row.Cells["mon"].Value.ToString();
-                textBox4.Text = row.Cells["rus"].Value.ToString();
-            }
         }
 
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -190,7 +199,7 @@ namespace Toli_bichig
                 }
 
                 MessageBox.Show("Амжилттай устгагдлаа!");
-                LoadData(); 
+                LoadData();
 
                 selectedId = -1;
                 textBox2.Clear();
@@ -201,11 +210,83 @@ namespace Toli_bichig
         private void btnClear_Click(object sender, EventArgs e)
         {
 
+            textBox2.Clear();
+            textBox3.Clear();
+            textBox4.Clear();
+
+            selectedId = -1;
+
+            dataGridView1.ClearSelection();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            // 1. Хэрэглэгч хүснэгтээс ямар нэгэн мөр сонгосон эсэхийг шалгах
+            if (selectedId == -1)
+            {
+                MessageBox.Show("Эхлээд хадгалах үгээ хүснэгтээс сонгоно уу!");
+                return;
+            }
 
+            DataGridViewRow selectedRow = null;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells["id"].Value != null && Convert.ToInt32(row.Cells["id"].Value) == selectedId)
+                {
+                    selectedRow = row;
+                    break;
+                }
+            }
+
+            if (selectedRow == null)
+            {
+                MessageBox.Show("Сонгогдсон мөр олдсонгүй!");
+                return;
+            }
+
+            string engWord = selectedRow.Cells["eng"].Value.ToString();
+            string monWord = selectedRow.Cells["mon"].Value.ToString();
+            string rusWord = selectedRow.Cells["rus"].Value.ToString();
+
+            
+
+            using (var conn = new SQLiteConnection(savedConnectionString))
+            {
+                conn.Open();
+
+                string insertQuery = "INSERT INTO saved_words (eng, mon, rus) VALUES (@eng, @mon, @rus);";
+
+                using (var cmd = new SQLiteCommand(insertQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@eng", engWord);
+                    cmd.Parameters.AddWithValue("@mon", monWord);
+                    cmd.Parameters.AddWithValue("@rus", rusWord);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("Сонгосон үг амжилттай хадгалагдлаа!");
+            LoadSavedData();
         }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+
+                selectedId = Convert.ToInt32(row.Cells["id"].Value);
+
+            }
+        }
+
+
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+        }
+
+
     }
 }
