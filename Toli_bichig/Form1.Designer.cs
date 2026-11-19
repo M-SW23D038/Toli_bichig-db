@@ -65,13 +65,11 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(508, 27);
             textBox1.TabIndex = 1;
-            textBox1.Text = "Хайх үг ...";
             textBox1.TextChanged += textBox1_TextChanged;
             // 
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "Бүгд" });
             comboBox1.Location = new Point(690, 15);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(96, 28);

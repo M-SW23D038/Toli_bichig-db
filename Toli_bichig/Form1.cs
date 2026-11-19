@@ -15,6 +15,8 @@ namespace Toli_bichig
         public Form1()
         {
             InitializeComponent();
+            comboBox1.Items.AddRange(new string[] { "Бүгд", "Англи", "Монгол", "Орос" });
+            comboBox1.SelectedIndex = 0;
             LoadData();
             LoadSavedData();
         }
@@ -68,18 +70,61 @@ namespace Toli_bichig
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
+            comboBox1_SelectedIndexChanged(sender, e);
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
 
         }
+        
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string keyword = textBox1.Text.Trim();
+            if (string.IsNullOrWhiteSpace(keyword) || keyword == "Хайх үг..")
+                keyword = "";
 
+            string lang = comboBox1.SelectedItem?.ToString() ?? "Бүгд";
+
+            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string query;
+
+                if (string.IsNullOrEmpty(keyword) && lang == "Бүгд")
+                {
+                    query = "SELECT * FROM words;";
+                }
+                else if (lang == "Англи")
+                {
+                    query = "SELECT * FROM words WHERE LOWER(eng) LIKE LOWER(@q);";
+                }
+                else if (lang == "Монгол")
+                {
+                    query = "SELECT * FROM words WHERE LOWER(mon) LIKE LOWER(@q);";
+                }
+                else if (lang == "Орос")
+                {
+                    query = "SELECT * FROM words WHERE LOWER(rus) LIKE LOWER(@q);";
+                }
+                else
+                {
+                    query = "SELECT * FROM words WHERE LOWER(eng) LIKE LOWER(@q) OR LOWER(mon) LIKE LOWER(@q) OR LOWER(rus) LIKE LOWER(@q);";
+                }
+
+                using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                {
+                    if (query.Contains("@q"))
+                        cmd.Parameters.AddWithValue("@q", "%" + keyword + "%");
+
+                    SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    dataGridView1.DataSource = dt;
+                }
+            }
         }
-
+        
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
